@@ -1,6 +1,8 @@
 const Event = require("../utils/estructure/Event");
+const Levels = require('../utils/levels')
 const Discord = require("discord.js");
 
+const level = new Levels();
 const cooldowns = new Discord.Collection();
 
 module.exports = class Message extends Event {
@@ -13,6 +15,8 @@ module.exports = class Message extends Event {
       return;
 
       this.worldDelete(message)
+
+      // level.levels(message.author.id)
 
     let prefix = client.prefix;
     if (message.content.startsWith(prefix)) {
@@ -48,7 +52,10 @@ module.exports = class Message extends Event {
     }
   }
 
-
+ /**
+  * 
+  * @param {String} message Mensaje que sera eliminado por ser una mala palabra
+  */
   async worldDelete(message){
     let bad = ["puto", "pto"];
 

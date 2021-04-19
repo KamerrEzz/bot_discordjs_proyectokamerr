@@ -17,7 +17,8 @@
   "license": "MIT",
   "dependencies": {
     "array-sort": "^1.0.0",
-    "discord.js": "^12.5.1",
+    "discord-slash-commands-client": "^1.1.1",
+    "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1"
