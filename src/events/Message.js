@@ -14,9 +14,9 @@ module.exports = class Message extends Event {
     if (message.author.bot && message.author.id === "817521733363564615")
       return;
 
-      this.worldDelete(message)
-
-      // level.levels(message.author.id)
+    this.worldDelete(message)
+    let newLvls = await level.levels(message)
+    if(newLvls) message.channel.send(`${message.author} has subido de nivel ${newLvls}`)
 
     let prefix = client.prefix;
     if (message.content.startsWith(prefix)) {
@@ -36,13 +36,13 @@ module.exports = class Message extends Event {
 
       if (timestamps.has(message.author.id)) {
         const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-    
+
         if (now < expirationTime) {
           const timeLeft = (expirationTime - now) / 1000;
           return message.reply(`espera ${timeLeft.toFixed(1)} para usar \`${command.name}\`.`);
         }
       }
-    
+
       timestamps.set(message.author.id, now);
       setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
@@ -52,14 +52,14 @@ module.exports = class Message extends Event {
     }
   }
 
- /**
-  * 
-  * @param {String} message Mensaje que sera eliminado por ser una mala palabra
-  */
-  async worldDelete(message){
+  /**
+   * 
+   * @param {String} message Mensaje que sera eliminado por ser una mala palabra
+   */
+  async worldDelete(message) {
     let bad = ["puto", "pto"];
 
-    if(bad.some(msg => message.content.includes(msg))){
+    if (bad.some(msg => message.content.includes(msg))) {
       message.delete()
       message.channel.send("Grosero").then(msg => msg.delete({ timeout: 5000 }))
     }

@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS levels(
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    guild VARCHAR(20),
+    user VARCHAR(20),
+    Levels INT,
+    xp INT,
+)

@@ -10,7 +10,7 @@ const load = async () => {
   Client.prefix = process.env.DISCORD_BOT_PREFIX;
   await registerCommands(Client, "../commands");
   await registerEvents(Client, "../events");
-  slashcommand(Client);
+  // slashcommand(Client);
   // slashcommand(process.env.DISCORD_BOT_TOKEN, process.env.DISCORD_BOT_ID);
   await Client.login(process.env.DISCORD_BOT_TOKEN);
 };

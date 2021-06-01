@@ -8,66 +8,36 @@ module.exports = class Niveles {
      * @param {String} user La ID del usuario
      * @return {String} Te da el usuario y sus datos
      */
-    levels(user) {
-        let xpNew = 0;
-        let LevelNew = 0;
-        let xpLimit = 100;
-        let xp = Math.floor(Math.random() * xpLimit);
-        let xpMax = Math.floor(Math.random() * 50);
+    async levels(user) {
+        let userID = user.author.id;
         let xpMin = Math.floor(Math.random() * 10);
 
-        let userDB = this.getUser(user)
-        console.log(userDB);
-
-        // if (xp > 50) {
-
-        //     if(userDB) {
-
-        //     } else {
-        //         this.newUser(user, xpMax, 0)
-        //     }
-
-        //     // console.log("Max", xpMax)
-        // } else {
-
-        //     if(userDB) {
-
-        //     } else {
-        //         this.newUser(user, xpMin, 0)
-        //     }
-        //     // console.log("Min", xpMin)
-        // }
-
-        // if (user.level >= xpLimit * user.level) {
-        //     console.log("Has subido de nivel")
-        //     // reiniciar el XP
-        // }
-
-        /**
-         * Guardar en la base de datos
-         */
-        /**
-         * user: 1234567890
-         * xp: 0
-         * level: 0
-         */
+        let userDB = await this.getUser(user.author.id);
+        if (userDB) {
+            let newLevels = await this.addXP(userID, xpMin);
+            if (newLevels) return newLevels
+        } else {
+            this.newUser(userID, 1, 1)
+        }
     }
 
+
     getUser(user) {
-        this.db.query(`SELECT * FROM Levels WHERE user = ? `, [user], (error, db) => {
-            return db
+        return new Promise((resolve, reject) => {
+            this.db.query(`SELECT * FROM Levels WHERE user = ? `, [user], (error, db) => {
+                if (error) return reject(error);
+                if (!db || db.length <= 0) return resolve(false)
+                return resolve(db[0])
+            })
         })
     }
 
     newUser(user, xp, level) {
-
         let data = {
             user,
             xp,
             level
         }
-
-
         this.db.query(`INSERT INTO Levels SET ? `, [data], (error) => {
             if (error) {
                 console.log(error)
@@ -75,12 +45,10 @@ module.exports = class Niveles {
         })
     }
 
-
-
-    newLevel() {
-
-        //NUEVO NIVEL - User new level 2
-
+    addLevel(user, lvl) {
+        this.db.query(`UPDATE Levels SET level = '${lvl}' WHERE user = '${user}'`, (error) => {
+            if (error) throw new Error(error);
+        })
     }
 
     getRank() {
@@ -91,34 +59,39 @@ module.exports = class Niveles {
 
     }
 
-    addLevel() {
-
-    }
-
     removeLevel() {
 
     }
 
 
-    addXP(user, xp) {
-        let userDB = this.getUser(user);
-        if (userDB) {
-
-        } else {
-            this.newUser(user, xp, 0)
-        }
+    async addXP(user, xp) {
+        return new Promise(async (bien, mal) => {
+            let userDB = await this.getUser(user);
+            let newLvl = parseInt(userDB.level) + 1;
+            let newXP = parseInt(userDB.xp) + parseInt(xp);
+            if (userDB.xp >= 100) {
+                this.db.query(`UPDATE Levels SET xp = '${1}' WHERE user = '${user}'`, (error) => {
+                    if (error) mal(error);
+                })
+                this.addLevel(user, newLvl)
+                this.addRole(user, newLvl)
+                return bien(newLvl);
+            } else {
+                this.db.query(`UPDATE Levels SET xp = '${newXP}' WHERE user = '${user}'`, (error) => {
+                    if (error) mal(error);
+                })
+            }
+        })
     }
 
     removeXP() {
 
     }
 
-    addRole() {
-
+    async addRole() {
     }
 
     removeRole() {
 
     }
-
 }
